@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090b13" />
+    <title>TaintForge — data-flow security analysis</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="TaintForge home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span class="brand-copy">TAINT<span>FORGE</span></span>
+        </a>
+        <div class="workspace-chip">
+          <span class="pulse-dot"></span>
+          <span>LOCAL WORKSPACE</span>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a class="nav-item active" href="#analysis"><span class="nav-icon">⌘</span><span>Analysis</span><span class="nav-key">01</span></a>
+          <a class="nav-item" href="#flows"><span class="nav-icon">◌</span><span>Flow graph</span><span class="nav-key">02</span></a>
+          <a class="nav-item" href="#rules"><span class="nav-icon">◇</span><span>Rule pack</span><span class="nav-key">05</span></a>
+        </nav>
+        <section class="engine-card">
+          <div class="engine-orbit"><span></span></div>
+          <div>
+            <p>ENGINE STATUS</p>
+            <strong>Operational</strong>
+            <small>Heuristic mode · local only</small>
+          </div>
+        </section>
+        <div class="sidebar-footer">
+          <span class="pulse-dot"></span>
+          No source leaves this machine
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>WORKSPACE</span>
+            <b>/</b>
+            <strong id="currentFile">gateway.js</strong>
+          </div>
+          <div class="topbar-actions">
+            <span class="live-indicator"><i></i> Live engine</span>
+            <button class="ghost-button" id="rulesButton" type="button">Rule pack <kbd>05</kbd></button>
+          </div>
+        </header>
+
+        <section class="hero" id="analysis">
+          <div>
+            <p class="eyebrow"><span></span> EXPLAINABLE STATIC ANALYSIS</p>
+            <h1>Trace the <em>flow.</em><br />Forge the fix.</h1>
+            <p class="hero-copy">TaintForge turns opaque source code into an explainable map of attacker-controlled data, risky sinks, and the shortest path to remediation.</p>
+          </div>
+          <div class="scan-window">
+            <div class="scan-window-top"><span>ANALYSIS SIGNAL</span><span id="scanStatus">READY</span></div>
+            <div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <p id="scanWindowText">Load a fixture or drop in a source file.</p>
+          </div>
+        </section>
+
+        <section class="metrics-grid" aria-label="Analysis summary">
+          <article class="metric-card risk-card">
+            <div class="metric-label"><span>RISK SCORE</span><span class="metric-mode">0–99</span></div>
+            <div class="risk-value"><strong id="riskMetric">--</strong><span id="riskLabel">awaiting scan</span></div>
+            <div class="risk-track"><i id="riskTrack"></i></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label"><span>TAINT FLOWS</span><span class="metric-icon">↗</span></div>
+            <strong id="flowMetric">--</strong>
+            <p>Source-to-sink paths</p>
+          </article>
+          <article class="metric-card critical-card">
+            <div class="metric-label"><span>CRITICAL</span><span class="metric-icon">!</span></div>
+            <strong id="criticalMetric">--</strong>
+            <p>Immediate review required</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label"><span>LINES SCANNED</span><span class="metric-icon">⌁</span></div>
+            <strong id="linesMetric">--</strong>
+            <p id="engineMetric">Heuristic engine idle</p>
+          </article>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel source-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-kicker">SOURCE INPUT</p>
+                <h2>Code surface</h2>
+              </div>
+              <span class="language-pill" id="languageBadge">JAVASCRIPT</span>
+            </div>
+            <div class="toolbar">
+              <label class="select-label">FIXTURE
+                <select id="sampleSelect" aria-label="Choose fixture"></select>
+              </label>
+              <label class="file-button" for="fileInput">IMPORT FILE<input id="fileInput" type="file" accept=".js,.mjs,.cjs,.ts,.tsx,.py,.jsx,.html" /></label>
+              <button class="run-button" id="scanButton" type="button"><span class="button-spark">✦</span> RUN ANALYSIS <kbd>⌘↵</kbd></button>
+            </div>
+            <div class="editor-wrap" id="dropZone">
+              <div class="editor-chrome"><span class="editor-dot red"></span><span class="editor-dot amber"></span><span class="editor-dot green"></span><span id="editorPath">fixtures/gateway.js</span><span>UTF-8</span></div>
+              <div class="editor-body">
+                <pre id="lineNumbers" aria-hidden="true"></pre>
+                <textarea id="editor" spellcheck="false" aria-label="Source code editor"></textarea>
+              </div>
+              <div class="editor-footer"><span id="editorInfo">0 lines</span><span>Drop a .js, .ts, or .py file here</span></div>
+            </div>
+          </article>
+
+          <article class="panel findings-panel" id="rules">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-kicker">DETECTION QUEUE</p>
+                <h2>Signal findings <span id="findingCount">0</span></h2>
+              </div>
+              <button class="icon-button" id="refreshButton" type="button" aria-label="Run analysis again">↻</button>
+            </div>
+            <div class="filter-row" id="filterRow">
+              <button class="filter active" data-filter="all" type="button">All</button>
+              <button class="filter" data-filter="critical" type="button">Critical</button>
+              <button class="filter" data-filter="high" type="button">High</button>
+              <button class="filter" data-filter="medium" type="button">Medium</button>
+            </div>
+            <div class="findings-list" id="findingsList">
+              <div class="empty-state">
+                <span class="empty-mark">⌁</span>
+                <strong>Engine standing by</strong>
+                <p>Run a scan to surface tainted data flows.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel flow-panel" id="flows">
+          <div class="panel-heading flow-heading">
+            <div>
+              <p class="panel-kicker">EXPLAINABLE PATH</p>
+              <h2 id="flowTitle">Select a finding to inspect the flow</h2>
+            </div>
+            <div class="confidence"><span>CONFIDENCE</span><strong id="confidenceValue">--</strong></div>
+          </div>
+          <div class="flow-layout">
+            <div class="flow-map" id="flowGraph">
+              <div class="graph-empty"><span>◌</span><p>Source → transform → sink</p></div>
+            </div>
+            <aside class="inspection-card" id="inspectionCard">
+              <div class="inspection-top"><span id="inspectionRule">NO SIGNAL</span><span id="inspectionSeverity" class="severity quiet">READY</span></div>
+              <h3 id="inspectionTitle">No finding selected</h3>
+              <p id="inspectionWhy">TaintForge will explain why a detected flow matters and how to break it safely.</p>
+              <div class="remediation"><span>RECOMMENDED BREAK</span><p id="inspectionFix">Load a fixture and run analysis to inspect a remediation path.</p></div>
+              <button class="line-jump" id="jumpButton" type="button" disabled>Jump to source <span>→</span></button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="bottom-row">
+          <article class="rule-pack-card">
+            <div><span class="eyebrow"><span></span> ACTIVE RULE PACK</span><h2>Five attack paths.<br /><em>One clear narrative.</em></h2></div>
+            <div class="rule-tags"><span>SSRF</span><span>SQLi</span><span>CMDi</span><span>PATH</span><span>XSS</span></div>
+          </article>
+          <article class="privacy-card">
+            <span class="privacy-symbol">◎</span>
+            <div><p>LOCAL-FIRST BY DESIGN</p><strong>Code stays in your browser and local runtime.</strong></div>
+          </article>
+        </section>
+      </section>
+    </main>
+    <template id="findingTemplate">
+      <button class="finding-card" type="button">
+        <span class="finding-rail"></span>
+        <span class="finding-content">
+          <span class="finding-meta"><span class="finding-category"></span><span class="finding-line"></span></span>
+          <strong class="finding-title"></strong>
+          <small class="finding-route"></small>
+        </span>
+        <span class="severity"></span>
+      </button>
+    </template>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

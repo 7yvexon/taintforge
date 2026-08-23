@@ -1,0 +1,15 @@
+{
+  "name": "taintforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An explainable static analysis platform for tracing vulnerable data flows.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
